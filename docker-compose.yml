@@ -1,45 +1,63 @@
-version: '3.7'
+# version: '3'
+# services:
+#   ui-react:
+#     build: 
+#       context: ./my-app
+#       dockerfile: Dockerfile
+#     container_name: ui-react
+#     ports:
+#       - "3000:3000"
+#     networks:
+#       - mern-stack-network
+#   back-react:
+#     build:
+#       context: ./Back-end
+#       dockerfile: Dockerfile
+#     container_name: back-react
+#     ports:
+#       - "4000:4000"
+#     networks:
+#       - mern-stack-network
+# networks:
+#   mern-stack-network:
 
+
+version: '3'
 services:
-  server:
-    build:
-      context: ./Back-end
-      dockerfile: Dockerfile
-    image: back_end
-    container_name: myapp-node-server
-    command: /usr/src/app/node_modules/.bin/nodemon app.js
-    volumes:
-      - ./Back-end/:/usr/src/app
-      - /usr/src/app/node_modules
-    ports:
-      - "4000:4000"
-    environment:
-      - NODE_ENV=development
-    networks:
-      - app-network
-  client:
-    build:
+  ui-react:
+    build: 
       context: ./my-app
       dockerfile: Dockerfile
-    image: front_end
-    container_name: myapp-react-client
-    command: npm start
-    volumes:
-      - ./my-app/:/usr/app
-      - /usr/app/node_modules
-    depends_on:
-      - server
+    container_name: ui-react
     ports:
       - "3000:3000"
     networks:
-      - app-network
-
+      - mern-stack-network
+    depends_on:
+      - mongo
+  back-react:
+    build:
+      context: ./Back-end
+      dockerfile: Dockerfile
+    container_name: back-react
+    ports:
+      - "4000:4000"
+    networks:
+      - mern-stack-network
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - mern-stack-network
 networks:
-    app-network:
-        driver: bridge
-
+  mern-stack-network:
+    driver: bridge
 volumes:
-    data-volume:
-    node_modules:
-    web-root:
-      driver: local
+  mongodb_data:
